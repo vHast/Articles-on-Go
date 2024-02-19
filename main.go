@@ -1,20 +1,29 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Homepage Endpoint Hit")
+type todo struct {
+	ID        string `json:"id"`
+	Item      string `json:"title"`
+	Completed bool   `json:"completed"`
 }
 
-func handleRequest() {
-	http.HandleFunc("/", homePage)
-	log.Fatal(http.ListenAndServe(":8081", nil))
+var todos = []todo{
+	{ID: "1", Item: "Clean Room", Completed: false},
+	{ID: "2", Item: "Read Book", Completed: false},
+	{ID: "3", Item: "Record Video", Completed: false},
+}
+
+func getTodos(context *gin.Context) {
+	context.IndentedJSON(http.StatusOK, todos)
 }
 
 func main() {
-	handleRequest()
+	router := gin.Default()
+	router.GET("/todos", getTodos)
+	router.Run("localhost:9090")
 }
